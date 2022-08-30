@@ -64,7 +64,7 @@ function validacaoEmail(email){
 router.get('/',(req,res,next)=>{
     res.status(200).send({
         mensagem:"lista de usuarios",
-        usuario:usuario[1].nomeusuario
+        usuario:usuario
     })
 })
 router.get('/:id',(req,res,next)=>{
@@ -111,6 +111,7 @@ router.patch('/:id',(req,res,next)=>{
     let msg=[];
     let i=0;
     const {id,nome,email,senha}= req.body;
+    let dadosalterados=usuario.filter(value=>value.id==id);
     if (nome.length<3){
         msg.push({mensagem:"usuario muito curto"})
         i++
@@ -135,11 +136,12 @@ router.patch('/:id',(req,res,next)=>{
 })
 router.delete('/:id',(req,res,next)=>{
     const {id} = req.params;
-    let listausuario=usuario.filter(value=>value.id==id);
+    let dadosdeletados=usuario.filter(value=>value.id==id);
+    let listausuario=usuario.filter(value=>value.id!=id);
     res.status(201).send({
         mensagem: "dados apagados",
-        id: id
-
+        dadosnovos:listausuario,
+        deletados:dadosdeletados
     })
 })
 module.exports = router;
