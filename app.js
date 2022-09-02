@@ -1,13 +1,21 @@
 const express = require('express');
 const app = express();
-const patrimonio = require('./routes/route');
+const usuarios = require('./routes/routeUser');
+const patrimonios = require('./routes/routePatrimony');
+const lotacao = require('./routes/routeStocking');
+const setores = require('./routes/routeSector');
+const empresas = require('./routes/routeEnterprise.js');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 
 app.use(morgan('dev'));
-app.use("/patrimonio",patrimonio)
+app.use("/usuarios",usuarios)
+app.use("/patrimonios",patrimonios)
+app.use("/lotacao",lotacao)
+app.use("/setores",setores)
+app.use("/empresas",empresas)
 
 
 app.use((req,res,next)=>{

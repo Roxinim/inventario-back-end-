@@ -111,7 +111,7 @@ router.patch('/:id',(req,res,next)=>{
     let msg=[];
     let i=0;
     const {id,nome,email,senha}= req.body;
-    let dadosalterados=usuario.filter(value=>value.id==id);
+    // let dadosalterados=usuario.filter(value=>value.id==id);
     if (nome.length<3){
         msg.push({mensagem:"usuario muito curto"})
         i++
