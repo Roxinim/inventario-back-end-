@@ -172,13 +172,13 @@ router.patch('/',(req,res,next)=>{
     let msg=[];
     let i=0;
     const {id,idusu,idpat,idset,idemp}= req.body;
-    const array_alterar = [{
-        id:id,
-        idemp:idemp,
-        idpat:idpat,
-        idset:idset,
-        idusu:idusu
-    }]
+    // const array_alterar = [{
+    //     id:id,
+    //     idemp:idemp,
+    //     idpat:idpat,
+    //     idset:idset,
+    //     idusu:idusu
+    // }]
     // let dadosalterados=lotacao.filter(value=>value.id==id);
     if (id.length==0){
         msg.push({mensagem:"lotacao vazia"})
@@ -201,8 +201,24 @@ router.patch('/',(req,res,next)=>{
         i++
     }
     if (i==0){
-        res.status(201).send({
-            mensagem:"Dados alterados!",
+        mysql.getConnection((error,conn)=>{
+            conn.query(
+                "UPDATE `lotacao` set id_usuario=?, id_patrimonio=?, id_setor=?, id_empresa=?, desde=? where id=?",
+                [nome,email,senha,id],
+                (error,resultado,field)=>{
+                    conn.release();
+                    if (error){
+                        res.status(500).send({
+                            error:error,
+                            response:null
+                        })
+                    }
+                    res.status(201).send({
+                        mensagem:"Cadastro realizado",
+                        usuario:resultado.insertId
+                    })
+                }
+                )
         })
     }else{
         res.status(400).send({
@@ -212,12 +228,29 @@ router.patch('/',(req,res,next)=>{
 })  
 router.delete('/:id',(req,res,next)=>{
     const {id} = req.params;
-    let dadosdeletados=lotacao.filter(value=>value.id==id);
-    let listalotacao=lotacao.filter(value=>value.id!=id);
-    res.status(201).send({
-        mensagem: "dados apagados",
-        dadosnovos:listalotacao,
-        deletados:dadosdeletados
+    mysql.getConnection((error,conn)=>{
+        conn.query(
+            `DELETE FROM lotacao WHERE id=${id}`,
+            (error,resultado,field)=>{
+                conn.release();
+                if (error){
+                    res.status(500).send({
+                        error:error,
+                        response:null
+                      })
+                }
+                res.status(201).send({
+                    mensagem:"DELETADO."
+                })
+            }
+            )
     })
+    // let dadosdeletados=lotacao.filter(value=>value.id==id);
+    // let listalotacao=lotacao.filter(value=>value.id!=id);
+    // res.status(201).send({
+    //     mensagem: "dados apagados",
+    //     dadosnovos:listalotacao,
+    //     deletados:dadosdeletados
+    // })
 })
 module.exports = router;

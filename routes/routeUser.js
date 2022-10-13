@@ -256,11 +256,10 @@ router.post('/logar',(req,res,next)=>{
          res.status(200).send({
            mensagem:"Dados do Usuário!!!!",
            usuario:resultado
-
+        //    token: 'test123'
          })
         }
        )
      })
-
 })
 module.exports = router;
