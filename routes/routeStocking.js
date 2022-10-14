@@ -171,7 +171,7 @@ router.post('/',(req, res, next)=>{
 router.patch('/',(req,res,next)=>{
     let msg=[];
     let i=0;
-    const {id,idusu,idpat,idset,idemp}= req.body;
+    const {id,idusu,idpat,idset,idemp,desde}= req.body;
     // const array_alterar = [{
     //     id:id,
     //     idemp:idemp,
@@ -200,11 +200,15 @@ router.patch('/',(req,res,next)=>{
         msg.push({mensagem:"empresa vazia"})
         i++
     }
+    if (desde.length==0){
+        msg.push({mensagem:"empresa vazia"})
+        i++
+    }
     if (i==0){
         mysql.getConnection((error,conn)=>{
             conn.query(
                 "UPDATE `lotacao` set id_usuario=?, id_patrimonio=?, id_setor=?, id_empresa=?, desde=? where id=?",
-                [nome,email,senha,id],
+                [nome,email,senha,id,desde],
                 (error,resultado,field)=>{
                     conn.release();
                     if (error){
