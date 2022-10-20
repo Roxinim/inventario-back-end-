@@ -55,12 +55,12 @@ router.get('/',(req,res,next)=>{
             empresa.nome AS empresa,
             setor.nome AS setor,
             patrimonio.nome AS patrimonio,
-            lotacao.criado_em 
+            lotacao.desde 
             FROM lotacao 
             INNER JOIN usuario ON lotacao.id_usuario = usuario.id 
-            INNER JOIN empresa ON lotacao.id_usuario = empresa.id 
-            INNER JOIN patrimonio ON lotacao.id_usuario = patrimonio.id 
-            INNER JOIN setor ON lotacao.id_usuario = setor.id
+            INNER JOIN empresa ON lotacao.id_empresa = empresa.id 
+            INNER JOIN patrimonio ON lotacao.id_patrimonio = patrimonio.id 
+            INNER JOIN setor ON lotacao.id_setor = setor.id
             ORDER BY lotacao.id;`,
             (error,resultado,field)=>{
                 conn.release();
@@ -82,32 +82,54 @@ router.get('/',(req,res,next)=>{
     //     lotacao:lotacao
     // })
 })
-router.get('/:id',(req,res,next)=>{
+router.get('/:id', (req, res, next) => {
     const id = req.params.id;
-    mysql.getConnection((error,conn)=>{
+
+    mysql.getConnection((error, conn) => {
         conn.query(
-            "SELECT lotacao.id,usuario.nome AS usuario,empresa.nome AS empresa,setor.nome AS setor,patrimonio.nome AS patrimonio,lotacao.criado_em FROM `lotacao` INNER JOIN usuario ON lotacao.id_usuario = usuario.id INNER JOIN empresa ON lotacao.id_usuario = empresa.id INNER JOIN patrimonio ON lotacao.id_usuario = patrimonio.id INNER JOIN setor ON lotacao.id_usuario = setor.id where lotacao.id=?",[id],
-            (error,resultado,field)=>{
+            "SELECT * FROM `lotacao` WHERE id=?",[id],
+            (error, resultado, field) => {
                 conn.release();
-                if (error){
-                    res.status(500).send({
-                        error:error,
-                        response:null
-                      })
+                if (error) {
+                    return res.status(500).send({
+                        error: error,
+                        response: null
+                    })
                 }
                 res.status(200).send({
-                    mensagem:"lista de lotação",
-                    lotacao:resultado
+                    mensagem: `lista de lotação com id`,
+                    lotacao: resultado
                 })
             }
-            )
+        )
     })
-    // let listalotacao=lotacao.filter(value=>value.id==id);
-    // res.status(200).send({
-    //     mensagem:`lotação com id: ${id}`,
-    //     lotacao:listalotacao
-    // })
 })
+// router.get('/:id',(req,res,next)=>{
+//     const id = req.params.id;
+//     mysql.getConnection((error,conn)=>{
+//         conn.query(
+//             "SELECT lotacao.id,usuario.nome AS usuario,empresa.nome AS empresa,setor.nome AS setor,patrimonio.nome AS patrimonio,lotacao.criado_em FROM `lotacao` INNER JOIN usuario ON lotacao.id_usuario = usuario.id INNER JOIN empresa ON lotacao.id_usuario = empresa.id INNER JOIN patrimonio ON lotacao.id_usuario = patrimonio.id INNER JOIN setor ON lotacao.id_usuario = setor.id where lotacao.id=?",[id],
+//             (error,resultado,field)=>{
+//                 conn.release();
+//                 if (error){
+//                     res.status(500).send({
+//                         error:error,
+//                         response:null
+//                       })
+//                 }
+//                 res.status(200).send({
+//                     mensagem:"lista de lotação",
+//                     lotacao:resultado
+//                 })
+//             }
+//             )
+//     })
+//     // let listalotacao=lotacao.filter(value=>value.id==id);
+//     // res.status(200).send({
+//     //     mensagem:`lotação com id: ${id}`,
+//     //     lotacao:listalotacao
+//     // })
+// })
 
 router.post('/',(req, res, next)=>{
     let msg=[];
@@ -143,7 +165,7 @@ router.post('/',(req, res, next)=>{
     if (i===0){
         mysql.getConnection((error,conn)=>{
             conn.query(
-                "INSERT INTO `lotacao`(id_usuario, id_patrimonio, id_setor,id_empresa, desde) VALUES(?,?,?,?,?)",[lotacao.idusu,lotacao.idpat,lotacao.idset,lotacao.idemp,lotacao.desde],
+                "INSERT INTO `lotacao`(id_usuario, id_patrimonio, id_setor, id_empresa, desde) VALUES(?,?,?,?,?)",[lotacao.idusu,lotacao.idpat,lotacao.idset,lotacao.idemp,lotacao.desde],
                 (error,resultado,field)=>{
                     conn.release();
                     if (error){
@@ -180,27 +202,27 @@ router.patch('/',(req,res,next)=>{
     //     idusu:idusu
     // }]
     // let dadosalterados=lotacao.filter(value=>value.id==id);
-    if (id.length==0){
+    if (id.length===0){
         msg.push({mensagem:"lotacao vazia"})
         i++
     }
-    if (idusu.length==0){
+    if (idusu.length===0){
         msg.push({mensagem:"usuario vazio"})
         i++
     }
-    if (idpat.length==0){
+    if (idpat.length===0){
         msg.push({mensagem:"patrimonio vazio"})
         i++
     }
-    if (idset.length==0){
+    if (idset.length===0){
         msg.push({mensagem:"setor vazio"})
         i++
     }
-    if (idemp.length==0){
+    if (idemp.length===0){
         msg.push({mensagem:"empresa vazia"})
         i++
     }
-    if (desde.length==0){
+    if (desde.length===0){
         msg.push({mensagem:"empresa vazia"})
         i++
     }
@@ -208,7 +230,7 @@ router.patch('/',(req,res,next)=>{
         mysql.getConnection((error,conn)=>{
             conn.query(
                 "UPDATE `lotacao` set id_usuario=?, id_patrimonio=?, id_setor=?, id_empresa=?, desde=? where id=?",
-                [nome,email,senha,id,desde],
+                [idusu,idpat,idset,idemp,desde,id],
                 (error,resultado,field)=>{
                     conn.release();
                     if (error){
